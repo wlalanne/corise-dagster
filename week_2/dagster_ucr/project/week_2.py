@@ -38,7 +38,7 @@ def process_data(stocks: List[Stock]):
     tags={"kind": "redis"},
 )
 def put_redis_data(context, aggregation):
-    context.resources.redis.put_data(aggregation)
+    context.resources.redis.put_data("agg_data", str(aggregation))
 
 
 @graph
