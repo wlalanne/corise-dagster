@@ -65,7 +65,7 @@ def week_3_pipeline():
 
 
 local = {
-    "ops": {"get_s3_data": {"config": {"s3_key": "new_stocks/stock_9.csv"}}},
+    "ops": {"get_s3_data": {"config": {"s3_key": "prefix/stock_9.csv"}}},
 }
 
 
