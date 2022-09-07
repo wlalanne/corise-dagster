@@ -53,7 +53,7 @@ def process_data(stocks: List[Stock]):
 )
 def put_redis_data(context, aggregation):
     context.resources.redis.put_data(str(aggregation.date), aggregation.high)
-    pass
+    return
 
 
 @graph
