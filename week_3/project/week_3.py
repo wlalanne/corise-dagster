@@ -13,6 +13,7 @@ from dagster import (
     op,
     sensor,
     static_partitioned_config,
+    schedule,
 )
 from project.resources import mock_s3_resource, redis_resource, s3_resource
 from project.sensors import get_s3_keys
@@ -90,7 +91,11 @@ docker = {
 }
 
 
-@static_partitioned_config(partition_keys=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+def _get_static_partition_keys() -> List[str]:
+    return list(map(lambda x: str(x), list(range(1, 11))))
+
+
+@static_partitioned_config(partition_keys=_get_static_partition_keys())
 def docker_config(partition_key):
     return {
         "resources": {
@@ -135,7 +140,11 @@ docker_week_3_pipeline = week_3_pipeline.to_job(
 
 local_week_3_schedule = ScheduleDefinition(job=local_week_3_pipeline, cron_schedule="*/15 * * * *")
 
-docker_week_3_schedule = ScheduleDefinition(job=docker_week_3_pipeline, cron_schedule="0 * * * *")
+
+@schedule(job=docker_week_3_pipeline, cron_schedule="0 * * * *")
+def docker_week_3_schedule():
+    for key in _get_static_partition_keys():
+        yield docker_week_3_pipeline.run_request_for_partition(partition_key=key, run_key=key)
 
 
 @sensor(job=docker_week_3_pipeline)
